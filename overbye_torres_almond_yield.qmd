@@ -1,0 +1,26 @@
+---
+title: "Almond Yield Function"
+author: "Amanda Overbye & Matteo Torres"
+date: "April 13, 2025"
+format: html
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(here)
+library(tidyverse)
+```
+
+```{r}
+clim <- read.table(here("data", "clim.txt"), header = TRUE)
+```
+
+```{r}
+source(here("almond_yield_model.R"))
+```
+
+```{r}
+almond_yield_test(clim)
+```
+
