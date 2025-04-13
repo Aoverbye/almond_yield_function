@@ -15,10 +15,10 @@ library(tidyverse)
 
 ## Read data
 ```{r}
-clim <- read.table(here("data", "clim.txt"), header = TRUE)
+clim_data <- read.table(here("data", "clim.txt"), header = TRUE)
 ```
 
-## Source functions
+## Source function
 ```{r}
 source(here("almond_yield_model.R"))
 ```
