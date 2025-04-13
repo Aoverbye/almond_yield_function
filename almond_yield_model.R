@@ -4,18 +4,16 @@
 #n;2
 
 
-data <- filter(month = 2)
 
 #So we would need to filter the month to equal february
 
 almond_yield_test <- function(clim){
     group_by(year, month) %>%
         summarise(
-            feb_temp = mean(tmin_c[month == 2]),
-            jan_precip = sum(precip[month == 1])
-        )
-    anomoly = -0.015 * feb_temp1 - 0.0046 * feb_temp1^2 - .07 * percep1 + .0034 * percep1^2 +.28
+            avg_feb_temp = mean(tmin_c[month == 2]),
+            total_jan_precip = sum(precip[month == 1])
+        ) %>% 
+        mutate(anomaly = -0.015 * avg_feb_temp - 0.0046 * avg_feb_temp^2 - .07 * total_jan_percep + .0034 * total_jan_percep1^2 +.28)
     return(anomoly)
 }
 
-almond_yield_test(6.263888889, 0)
