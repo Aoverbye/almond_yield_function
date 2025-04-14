@@ -8,10 +8,14 @@ editor_options:
 ---
 
 ## Load packages
-```{r}
+```{r, message=FALSE}
+#| code-fold: true
 library(here)
 library(tidyverse)
 ```
+
+## Model diagram
+![](almond_yield_diagram.png)
 
 ## Read data
 ```{r}
@@ -28,4 +32,9 @@ source(here("almond_yield_model.R"))
 almond_yield_model(clim_data)
 ```
 
+```{r, echo=FALSE}
+message(paste("The minimum anomaly between 1988-2010 was:", signif(almond_yield_model(clim_data)[1], 3), "ton acre^-1"),
+        paste("\nThe maximum anomaly between 1988-2010 was:", signif(almond_yield_model(clim_data)[2], 3), "ton acre^-1"),
+        paste("\nThe average anomaly between 1988-2010 was:", signif(almond_yield_model(clim_data)[3], 3), "ton acre^-1"))
+```
 
