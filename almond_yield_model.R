@@ -23,7 +23,12 @@ almond_yield_model <- function(clim_data){
     anomaly_min <- min(almond_year_anomaly$anomaly, na.rm = TRUE)
     anomaly_max <- max(almond_year_anomaly$anomaly, na.rm = TRUE)
     anomaly_mean <- mean(almond_year_anomaly$anomaly, na.rm = TRUE)
+  
+    almond_profit_ton <- 200
+    almond_profit_min <- anomaly_min * almond_profit_ton
+    almond_profit_max <- anomaly_max * almond_profit_ton
+    almond_profit_mean <- anomaly_mean * almond_profit_ton
     
-    return(c(anomaly_min, anomaly_max, anomaly_mean))
+    return(c(almond_profit_min, almond_profit_max, almond_profit_mean))
 }
 
