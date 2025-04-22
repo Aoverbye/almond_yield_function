@@ -1,0 +1,38 @@
+---
+title: "Profit with Almond Yield Function"
+author: "Amanda Overbye & Matteo Torres"
+date: "April 21, 2025"
+format: 
+    html:
+        embed-resources: true
+editor_options: 
+  chunk_output_type: console
+---
+[Link to Repository](https://github.com/Aoverbye/almond_yield_function)
+
+## Load packages
+
+```{r, message=FALSE}
+#| code-fold: true
+library(here)
+library(tidyverse)
+```
+
+## Read data
+
+```{r}
+clim_data <- read.table(here("data", "clim.txt"), header = TRUE)
+```
+
+## Source function
+
+```{r}
+source(here("almond_yield_model.R"))
+source(here("almond_yield_profit.R"))
+```
+
+## Use function
+
+```{r}
+almond_yield_profit(clim_data)
+```

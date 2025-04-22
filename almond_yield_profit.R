@@ -10,25 +10,13 @@
 #' .
 #' @examples almond_yield_model(clim_data)
 
-almond_yield_profit <- function(clim_data, almond_profit_ton = 1400){
+almond_yield_profit <- function(clim_data, profit_ton = 1400, costs_ton = 1000) {
     
-    almond_year_anomaly <- clim_data %>%
-        group_by(year) %>%
-        summarise(
-            avg_feb_temp = mean(tmin_c[month == 2], na.rm = TRUE),
-            total_jan_precip = sum(precip[month == 1], na.rm = TRUE)
-        ) %>% 
-        mutate(anomaly = -0.015 * avg_feb_temp - 0.0046 * avg_feb_temp^2 -
-                   0.07 * total_jan_precip + 0.0043 * total_jan_precip^2 + 0.28)
-        
-    anomalies <- c(
-            min  = min(almond_year_anomaly$anomaly, na.rm = TRUE),
-            max  = max(almond_year_anomaly$anomaly, na.rm = TRUE),
-            mean = mean(almond_year_anomaly$anomaly, na.rm = TRUE)
-        )
+    # Call the almond yield model to get predicted yield (in tons per acre)
+    yield_tons <- almond_yield_model(clim_data)
     
-    
-    profits <- anomalies * almond_profit_ton
+    # Calculate profit: (yield per acre) * profit per ton - cost per acre
+    profits <- yield_tons * profit_ton - costs_ton
     
     return(profits)
 }
