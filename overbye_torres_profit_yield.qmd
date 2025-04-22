@@ -24,7 +24,7 @@ library(tidyverse)
 clim_data <- read.table(here("data", "clim.txt"), header = TRUE)
 ```
 
-## Source function
+## Source functions
 
 ```{r}
 source(here("almond_yield_model.R"))
@@ -34,5 +34,83 @@ source(here("almond_yield_profit.R"))
 ## Use function
 
 ```{r}
+# Default parameters (profit_ton = 1400, costs_ton = 700)
 almond_yield_profit(clim_data)
 ```
+
+## Informal sensitivity analysis
+
+```{r}
+# Use default profit per ton value
+profit_value <- 1400
+
+# Create test parameters for cost as fractions of profit
+cost_fractions <- c(0.25, 0.50, 0.75)
+
+# Create all combinations of profit values and cost fractions
+param_grid <- expand.grid(profit_ton = profit_value, cost_fraction = cost_fractions)
+
+# Calculate costs for each combination using cost fractions
+param_grid$costs_ton <- param_grid$profit_ton * param_grid$cost_fraction
+
+# Initialize empty columns for yield profits
+param_grid$min_profit <- NA
+param_grid$max_profit <- NA
+param_grid$mean_profit <- NA
+
+# Loop through each combination
+for (i in 1:nrow(param_grid)) {
+  profit_vec <- almond_yield_profit(clim_data,
+                                    profit_ton = param_grid$profit_ton[i],
+                                    costs_ton = param_grid$costs_ton[i])
+  
+  # Store profit results
+  param_grid$min_profit[i] <- profit_vec[1]
+  param_grid$max_profit[i] <- profit_vec[2]
+  param_grid$mean_profit[i] <- profit_vec[3]
+}
+
+# Verify
+param_grid
+```
+
+## Visualizations
+```{r, warning = FALSE}
+#| code-fold: true
+
+# Convert to dataframe for plotting
+param_grid <- as.data.frame(param_grid) %>%
+    pivot_longer(cols = c(min_profit, max_profit, mean_profit),
+                 names_to = "profit_stat",
+                 values_to = "profit_value")
+
+# Boxplot analyzing distributions of cost fractions
+ggplot(data = param_grid, aes(x = costs_ton , y = profit_value)) +
+    geom_boxplot() +
+    facet_wrap(~cost_fraction) +
+    scale_y_continuous(expand = c(0, 0)) +
+    labs(x = "Costs per Ton ($)",
+         y = "Profit ($)",
+         title = "Profit Distributions for Different Cost Fractions") +
+    theme_bw()
+```
+
+```{r}
+#| code-fold: true
+
+# Scatterplot analyzing differences in cost fractions
+ggplot(data = param_grid, aes(x = costs_ton, y = profit_value, color = profit_stat)) +
+    geom_point() +
+    labs(x = "Costs per Ton ($)",
+         y = "Profit ($)",
+         title = "Scatter Plot of Profit vs Costs per Ton by Profit Type",
+         color = "Profit Stat") +
+    scale_color_manual(labels = c("Max Profit", "Mean Profit", "Min Profit"), values = c("blue", "purple", "red")) +
+    theme_bw()
+```
+
+## Summary
+
+We developed a simple profit model that integrates net profit per ton (profit - costs) with annual almond yield anomalies to estimate the minimum, maximum, and mean profits from almond yields. To simplify the process, we embedded the almond yield model into our profit model. To better understand how varying costs impact profit, we conducted an informal sensitivity analysis by testing different cost fractions (1/3, 1/2, and 3/4 of the net profit per ton). This analysis allowed us to observe how changes in cost affect profit yields, providing insights into how different cost scenarios could influence the profitability of almond farming over time.
+
+To best visualize our results, we used boxplots to analyze how different cost scenarios impacted profit yields. The boxplots revealed a clear trend: maximum profit yields varied significantly, with lower costs resulting in higher profits, as expected. However, we observed that the mean profit yields were much closer to one another, suggesting that the maximums might be outliers that are skewing the data. Alternatively, this could indicate that the majority of almond yield anomalies across all profit scenarios are relatively similar. To better visualize the means, we also created a scatter plot showing the three profit types (max, min, and mean). The scatter plot demonstrated that, while the values are closely grouped, there is a noticeable plateau in the decline of profits as costs per ton increase.
